@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#0282af</color>
+    <color name="colorPrimaryDark">#68c0d8</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorMenuButton">#ffffff</color>
+    <color name="colorTitleTextView">#ffffff</color>
+    <color name="colorEditUnable">#ffffff</color>
+    <color name="colorEditDisable">#dedede</color>
+    <color name="colorTextUnable">#000000</color>
+    <color name="colorTextDisable">#696969</color>
+    <color name="colorTempMax">#f12525</color>
+</resources>
