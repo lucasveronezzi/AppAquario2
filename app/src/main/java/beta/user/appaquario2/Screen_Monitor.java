@@ -13,4 +13,5 @@ public class Screen_Monitor extends AppCompatActivity {
 
         Intent intent = getIntent();
     }
+
 }

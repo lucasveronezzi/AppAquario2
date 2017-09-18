@@ -59,7 +59,7 @@
                     app:srcCompat="@mipmap/ic_arrow_blue" />
 
                 <TextView
-                    android:id="@+id/textView12"
+                    android:id="@+id/text_temp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
@@ -68,7 +68,7 @@
                     android:textSize="20sp" />
 
                 <TextView
-                    android:id="@+id/textView16"
+                    android:id="@+id/text_tempMin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=" 26°"
@@ -84,7 +84,7 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/textView18"
+                    android:id="@+id/text_tempMax"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="15°"
@@ -166,7 +166,7 @@
                     app:srcCompat="@mipmap/ic_arrow_red" />
 
                 <TextView
-                    android:id="@+id/textView14"
+                    android:id="@+id/text_PH"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="7.00"
@@ -200,7 +200,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/textView15"
+                    android:id="@+id/text_vazao"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="3.58 (L/m)"
@@ -236,7 +236,7 @@
                 android:textSize="18sp" />
 
             <Switch
-                android:id="@+id/toggleButton"
+                android:id="@+id/switch_luz"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
@@ -261,7 +261,7 @@
                 android:textSize="18sp" />
 
             <Switch
-                android:id="@+id/toggleButton2"
+                android:id="@+id/switch_bomba"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
@@ -287,7 +287,7 @@
                 android:textSize="18sp" />
 
             <Switch
-                android:id="@+id/toggleButton3"
+                android:id="@+id/switch_motor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
