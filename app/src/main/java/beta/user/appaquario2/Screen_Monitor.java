@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,6 +20,9 @@ import android.widget.ToggleButton;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Screen_Monitor extends AppCompatActivity {
 
@@ -36,6 +40,7 @@ public class Screen_Monitor extends AppCompatActivity {
     private TextView text_data_cooler;
     private ImageView img_temp;
     private ImageView img_ph;
+    private Timer timer;
 
     private static final int ACTION_LUZ = 0;
     private static final int ACTION_BOMBA = 1;
@@ -65,6 +70,28 @@ public class Screen_Monitor extends AppCompatActivity {
 
         TaskMonitor task = new TaskMonitor(true);
         task.execute(param);
+
+        final Handler handler = new Handler();
+        timer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        String param = "query=monitor_atual";
+                        TaskMonitor task = new TaskMonitor(false);
+                        task.execute(param);
+                    }
+                });
+            }
+        };
+        timer.schedule(timerTask, 15000, 15000);;
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        timer.cancel();
     }
 
     public void actionLuz(View v){
@@ -101,7 +128,7 @@ public class Screen_Monitor extends AppCompatActivity {
                 pDialog.setCancelable(true);
                 pDialog.show();
             }else{
-                Toast.makeText(context, "Atualizando informações...",Toast.LENGTH_SHORT);
+                //Toast.makeText(context, "Atualizando informações...",Toast.LENGTH_SHORT).show();
             }
         }
         @Override
@@ -216,7 +243,7 @@ public class Screen_Monitor extends AppCompatActivity {
                 alert11.show();
             }
             if(firstTask) pDialog.dismiss();
-            else Toast.makeText(context, "Informações atualizadas.",Toast.LENGTH_SHORT).show();
+            //else Toast.makeText(context, "Informações atualizadas.",Toast.LENGTH_SHORT).show();
         }
     }
 
