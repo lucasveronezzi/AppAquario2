@@ -13,15 +13,12 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 /**
  * Created by Lucas on 17/09/2017.
  */
-
 public class LayoutAgendamento extends LinearLayout {
 
     private int stateToSave;
-    private  Button btnFirst;
     private Screen_Config context;
 
     public LayoutAgendamento(Context context){
@@ -34,7 +31,7 @@ public class LayoutAgendamento extends LinearLayout {
 
         setParams();
         createTextView("Ligar: ", new LinearLayout.LayoutParams(80,ViewGroup.LayoutParams.WRAP_CONTENT));
-        btnFirst = createButton();
+        createButton();
 
         LinearLayout.LayoutParams lp_textView = new LinearLayout.LayoutParams(100,ViewGroup.LayoutParams.WRAP_CONTENT);
         lp_textView.setMargins(10,0,0,0);
@@ -76,12 +73,13 @@ public class LayoutAgendamento extends LinearLayout {
         editTxt.setInputType(InputType.TYPE_CLASS_NUMBER);
         editTxt.setPadding(10,10,10,10);
         editTxt.setEms(10);
+
         this.addView(editTxt);
     }
 
-    private Button createButton(){
+    private void createButton(){
         Button btn = new Button(context);
-        btn.setLayoutParams(new ViewGroup.LayoutParams(85,50));
+        btn.setLayoutParams(new ViewGroup.LayoutParams(120,55));
         btn.setBackground(getResources().getDrawable(R.drawable.view_round_enable));
         btn.setTextColor(getResources().getColor(R.color.colorTextUnable));
         btn.setPadding(10,10,10,10);
@@ -92,9 +90,8 @@ public class LayoutAgendamento extends LinearLayout {
                 context.showTimePickerDialog(v);
             }
         });
-        this.addView(btn);
 
-        return btn;
+        this.addView(btn);
     }
 
     private void createImgButton(){
@@ -112,45 +109,30 @@ public class LayoutAgendamento extends LinearLayout {
         this.addView(img);
     }
 
-    public Button getViewBtn(){
-        return btnFirst;
-    }
-
     @Override
     public Parcelable onSaveInstanceState() {
-        //begin boilerplate code that allows parent classes to save state
         Parcelable superState = super.onSaveInstanceState();
-
         SavedState ss = new SavedState(superState);
-        //end
-
         ss.stateToSave = this.stateToSave;
-
         return ss;
     }
 
     @Override
     public void onRestoreInstanceState(Parcelable state) {
-        //begin boilerplate code so parent classes can restore state
         if(!(state instanceof SavedState)) {
             super.onRestoreInstanceState(state);
             return;
         }
-
         SavedState ss = (SavedState)state;
         super.onRestoreInstanceState(ss.getSuperState());
-        //end
-
         this.stateToSave = ss.stateToSave;
     }
 
     static class SavedState extends BaseSavedState {
         int stateToSave;
-
         SavedState(Parcelable superState) {
             super(superState);
         }
-
         private SavedState(Parcel in) {
             super(in);
             this.stateToSave = in.readInt();
@@ -162,7 +144,6 @@ public class LayoutAgendamento extends LinearLayout {
             out.writeInt(this.stateToSave);
         }
 
-        //required field that makes Parcelables from a Parcel
         public static final Parcelable.Creator<SavedState> CREATOR =
                 new Parcelable.Creator<SavedState>() {
                     public SavedState createFromParcel(Parcel in) {

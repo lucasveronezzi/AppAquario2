@@ -17,6 +17,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void open_screen_grafico(View view) {
+        Intent intent = new Intent(this, Screen_grafico.class);
+        startActivity(intent);
+    }
+
     public void open_screen_monitor(View view) {
         Intent intent = new Intent(this, Screen_Monitor.class);
         startActivity(intent);

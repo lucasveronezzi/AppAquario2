@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="beta.user.appaquario2">
-    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,14 +19,17 @@
         </activity>
         <activity
             android:name=".Screen_Config"
-            android:screenOrientation="portrait"
             android:label="@string/config_name"
             android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Screen_Monitor"
             android:label="@string/monitor_name"
             android:parentActivityName=".MainActivity" />
+        <activity android:name=".Screen_grafico"
+            android:label="@string/grafico_name"
+            android:parentActivityName=".MainActivity"></activity>
     </application>
 
 </manifest>
