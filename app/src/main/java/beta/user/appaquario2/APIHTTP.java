@@ -21,14 +21,20 @@ import java.nio.charset.StandardCharsets;
 public class APIHTTP {
     public static JSONObject getObject(String param) throws ErroAPI, JSONException, IOException {
         StringBuilder retorno = Connect(param);
-        hasErro(retorno);
-        return  new JSONObject(retorno.toString());
+        if(retorno != null && retorno.length() > 0) {
+            hasErro(retorno);
+            return new JSONObject(retorno.toString());
+        }
+        throw new ErroAPI("Não foi possivel ler o retorno do Banco de dados.","Comunicação foi interrompida");
     }
 
     public static JSONArray getArray(String param) throws JSONException, ErroAPI, IOException {
         StringBuilder retorno = Connect(param);
-        hasErro(retorno);
-        return new JSONArray(retorno.toString());
+        if(retorno != null && retorno.length() > 0) {
+            hasErro(retorno);
+            return new JSONArray(retorno.toString());
+        }
+        throw new ErroAPI("Não foi possivel ler o retorno do Banco de dados.","Comunicação foi interrompida");
     }
 
     private static void hasErro(StringBuilder str) throws JSONException, ErroAPI {
@@ -70,7 +76,7 @@ public class APIHTTP {
                 connection.disconnect();
             }
 
-        Log.i("API",sb.toString());
+        Log.i("API_Retorno",sb.toString());
         return sb;
     }
 

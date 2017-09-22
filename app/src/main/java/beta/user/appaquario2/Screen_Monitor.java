@@ -26,7 +26,7 @@ import java.util.TimerTask;
 
 public class Screen_Monitor extends AppCompatActivity {
 
-    private Context context;
+    private AppCompatActivity atividade;
     private TextView text_temp;
     private TextView text_tempMin;
     private TextView text_tempMax;
@@ -50,7 +50,7 @@ public class Screen_Monitor extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_screen__monitor);
-        context = this;
+        atividade = this;
 
         text_temp = (TextView) findViewById(R.id.text_temp);
         text_tempMin = (TextView) findViewById(R.id.text_tempMin);
@@ -122,13 +122,13 @@ public class Screen_Monitor extends AppCompatActivity {
         protected void onPreExecute(){
             super.onPreExecute();
             if(firstTask) {
-                pDialog = new ProgressDialog(context);
+                pDialog = new ProgressDialog(atividade);
                 pDialog.setMessage("Buscando informações...");
                 pDialog.setIndeterminate(false);
-                pDialog.setCancelable(true);
+                pDialog.setCancelable(false);
                 pDialog.show();
             }else{
-                //Toast.makeText(context, "Atualizando informações...",Toast.LENGTH_SHORT).show();
+                //Toast.makeText(atividade, "Atualizando informações...",Toast.LENGTH_SHORT).show();
             }
         }
         @Override
@@ -167,17 +167,17 @@ public class Screen_Monitor extends AppCompatActivity {
 
                     if(!firstTask){
                         if(switch_luz.isChecked() && !MainActivity.stringToBool(dados.getString(9)) )
-                            Toast.makeText(context, "Iluminação Desligada!",Toast.LENGTH_LONG);
+                            Toast.makeText(atividade, "Iluminação Desligada!",Toast.LENGTH_LONG);
                         if(!switch_luz.isChecked() && MainActivity.stringToBool(dados.getString(9)) )
-                            Toast.makeText(context, "Iluminação Ligada!",Toast.LENGTH_LONG);
+                            Toast.makeText(atividade, "Iluminação Ligada!",Toast.LENGTH_LONG);
 
                         if(switch_bomba.isChecked() && !MainActivity.stringToBool(dados.getString(10)) )
-                            Toast.makeText(context, "Bomba de Água Desligada!",Toast.LENGTH_LONG);
+                            Toast.makeText(atividade, "Bomba de Água Desligada!",Toast.LENGTH_LONG);
                         if(!switch_bomba.isChecked() && MainActivity.stringToBool(dados.getString(10)) )
-                            Toast.makeText(context, "Bomba de Água Ligada!",Toast.LENGTH_LONG);
+                            Toast.makeText(atividade, "Bomba de Água Ligada!",Toast.LENGTH_LONG);
 
                         if(!toggle_alimentar.isChecked() && !MainActivity.stringToBool(dados.getString(9)) )
-                            Toast.makeText(context, "Os peixes foram alimentados!",Toast.LENGTH_LONG);
+                            Toast.makeText(atividade, "Os peixes foram alimentados!",Toast.LENGTH_LONG);
                     }
 
                     switch_luz.setChecked(MainActivity.stringToBool(dados.getString(9)));
@@ -190,8 +190,8 @@ public class Screen_Monitor extends AppCompatActivity {
                     toggle_alimentar.setEnabled(!MainActivity.stringToBool(config.getString(4)));
 
                     int int_temp = Integer.parseInt(dados.getString(2).substring(0,2));
-                    int int_tempMin = Integer.parseInt(config.getString(0).substring(0,2));
-                    int int_tempMax = Integer.parseInt(config.getString(1).substring(0,2));
+                    int int_tempMin = Integer.parseInt(config.getString(0));
+                    int int_tempMax = Integer.parseInt(config.getString(1));
                     if(int_temp > int_tempMin && int_temp < int_tempMax){
                         img_temp.setVisibility(View.INVISIBLE);
                     }else if(int_temp > int_tempMax){
@@ -228,22 +228,13 @@ public class Screen_Monitor extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }else{
-                AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
-                builder1.setTitle("Erro");
-                builder1.setMessage(erro);
-                builder1.setCancelable(true);
-                builder1.setPositiveButton(
-                        "Fechar",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-                AlertDialog alert11 = builder1.create();
-                alert11.show();
+                DialogError alert1 = new DialogError(atividade, erro);
+                if(timer != null)
+                    timer.cancel();
+                alert1.show();
             }
             if(firstTask) pDialog.dismiss();
-            //else Toast.makeText(context, "Informações atualizadas.",Toast.LENGTH_SHORT).show();
+            //else Toast.makeText(atividade, "Informações atualizadas.",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -277,7 +268,7 @@ public class Screen_Monitor extends AppCompatActivity {
                     param = "query=update_action&motor=1";
                     break;
             }
-            Toast.makeText(context, textShow ,Toast.LENGTH_LONG).show();
+            Toast.makeText(atividade, textShow ,Toast.LENGTH_LONG).show();
         }
         @Override
         protected JSONObject doInBackground(String... params) {
@@ -308,19 +299,9 @@ public class Screen_Monitor extends AppCompatActivity {
                         toggle_alimentar.setChecked(!toggle_alimentar.isChecked());
                         break;
                 }
-                AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
-                builder1.setTitle("Erro");
-                builder1.setMessage(erro);
-                builder1.setCancelable(true);
-                builder1.setPositiveButton(
-                        "Fechar",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-                AlertDialog alert11 = builder1.create();
-                alert11.show();
+                DialogError alert1 = new DialogError(atividade, erro);
+                timer.cancel();
+                alert1.show();
             }
         }
     }

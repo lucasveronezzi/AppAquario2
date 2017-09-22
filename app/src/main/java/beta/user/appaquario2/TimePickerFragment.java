@@ -13,9 +13,6 @@ import java.util.Calendar;
 
 public class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
     private View mView;
-    public  TimePickerFragment(View view) {
-        mView = view;
-    }
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Calendar c = Calendar.getInstance();
@@ -25,6 +22,10 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
         // Create a new instance of TimePickerDialog and return it
         return new TimePickerDialog(getActivity(), this, hour, minute,
                 DateFormat.is24HourFormat(getActivity()));
+    }
+
+    public void setView(View view) {
+        this.mView = view;
     }
 
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {

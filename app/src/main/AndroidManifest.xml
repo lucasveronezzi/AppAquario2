@@ -17,6 +17,7 @@
         </activity>
         <activity
             android:name=".Screen_Config"
+            android:screenOrientation="portrait"
             android:label="@string/config_name"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
