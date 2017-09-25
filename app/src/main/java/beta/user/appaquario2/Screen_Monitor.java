@@ -66,10 +66,8 @@ public class Screen_Monitor extends AppCompatActivity {
         img_ph = (ImageView) findViewById(R.id.imgPH);
         img_temp = (ImageView) findViewById(R.id.imgTemp);
 
-        String param = "query=monitor_atual";
-
         TaskMonitor task = new TaskMonitor(true);
-        task.execute(param);
+        task.execute();
 
         final Handler handler = new Handler();
         timer = new Timer();
@@ -78,9 +76,8 @@ public class Screen_Monitor extends AppCompatActivity {
             public void run() {
                 handler.post(new Runnable() {
                     public void run() {
-                        String param = "query=monitor_atual";
                         TaskMonitor task = new TaskMonitor(false);
-                        task.execute(param);
+                        task.execute();
                     }
                 });
             }
@@ -135,7 +132,7 @@ public class Screen_Monitor extends AppCompatActivity {
         protected JSONArray doInBackground(String... params) {
             JSONArray dados = null;
             try {
-                dados = APIHTTP.getArray(params[0]);
+                dados = APIHTTP.getArray("monitor","GET","");
             } catch (Exception e) {
                 Log.i("API", e.getMessage());
                 erro = e.getMessage();
@@ -146,18 +143,18 @@ public class Screen_Monitor extends AppCompatActivity {
         protected void onPostExecute(JSONArray array){
             if(array != null) {
                 try {
-                    JSONArray dados = array.getJSONArray(0);
-                    JSONArray config = array.getJSONArray(1);
+                    JSONArray sensor = array.getJSONArray(0);
+                    JSONArray rele = array.getJSONArray(1);
 
-                    text_temp.setText(dados.getString(2).substring(0,2) + "°C");
-                    text_tempMin.setText(dados.getString(3).substring(0,2) + "°");
-                    text_tempMax.setText(dados.getString(4).substring(0,2) + "°");
-                    text_PH.setText(dados.getString(5));
-                    text_vazao.setText(dados.getString(6) + " (L/m)");
+                    text_temp.setText(sensor.getJSONArray(0).getString(0).substring(0,sensor.getJSONArray(0).getString(0).length()-3) + "°C");
+                    text_tempMin.setText(sensor.getJSONArray(0).getString(1).substring(0,sensor.getJSONArray(0).getString(1).length()-3) + "°");
+                    text_tempMax.setText(sensor.getJSONArray(0).getString(2).substring(0,sensor.getJSONArray(0).getString(2).length()-3) + "°");
+                    text_PH.setText(sensor.getJSONArray(2).getString(0));
+                    text_vazao.setText(sensor.getJSONArray(1).getString(0) + " (L/m)");
 
-                    text_hora_cooler.setText(FormataData.formatToString(dados.getString(8),"HH:mm"));
-                    text_data_cooler.setText(FormataData.formatToString(dados.getString(8),"dd/MM/yyyy"));
-                    if(MainActivity.stringToBool(dados.getString(7))){
+                    text_hora_cooler.setText(FormataData.formatToString(rele.getJSONArray(3).getString(2),"HH:mm"));
+                    text_data_cooler.setText(FormataData.formatToString(rele.getJSONArray(3).getString(2),"dd/MM/yyyy"));
+                    if(MainActivity.stringToBool(rele.getJSONArray(3).getString(0))){
                         toggle_cooler.setChecked(true);
                         toggle_cooler.setTextColor(Color.parseColor("#fff17a0a"));
                     }else{
@@ -166,32 +163,32 @@ public class Screen_Monitor extends AppCompatActivity {
                     }
 
                     if(!firstTask){
-                        if(switch_luz.isChecked() && !MainActivity.stringToBool(dados.getString(9)) )
+                        if(switch_luz.isChecked() && !MainActivity.stringToBool(rele.getJSONArray(2).getString(0)) )
                             Toast.makeText(atividade, "Iluminação Desligada!",Toast.LENGTH_LONG);
-                        if(!switch_luz.isChecked() && MainActivity.stringToBool(dados.getString(9)) )
+                        if(!switch_luz.isChecked() && MainActivity.stringToBool(rele.getJSONArray(2).getString(0)) )
                             Toast.makeText(atividade, "Iluminação Ligada!",Toast.LENGTH_LONG);
 
-                        if(switch_bomba.isChecked() && !MainActivity.stringToBool(dados.getString(10)) )
+                        if(switch_bomba.isChecked() && !MainActivity.stringToBool(rele.getJSONArray(1).getString(0)) )
                             Toast.makeText(atividade, "Bomba de Água Desligada!",Toast.LENGTH_LONG);
-                        if(!switch_bomba.isChecked() && MainActivity.stringToBool(dados.getString(10)) )
+                        if(!switch_bomba.isChecked() && MainActivity.stringToBool(rele.getJSONArray(1).getString(0)) )
                             Toast.makeText(atividade, "Bomba de Água Ligada!",Toast.LENGTH_LONG);
 
-                        if(!toggle_alimentar.isChecked() && !MainActivity.stringToBool(dados.getString(9)) )
+                        if(!toggle_alimentar.isChecked() && !MainActivity.stringToBool(rele.getJSONArray(0).getString(1)) )
                             Toast.makeText(atividade, "Os peixes foram alimentados!",Toast.LENGTH_LONG);
                     }
 
-                    switch_luz.setChecked(MainActivity.stringToBool(dados.getString(9)));
-                    switch_luz.setEnabled(!MainActivity.stringToBool(config.getString(6)));
+                    switch_luz.setChecked(MainActivity.stringToBool(rele.getJSONArray(2).getString(0)));
+                    switch_luz.setEnabled(!MainActivity.stringToBool(rele.getJSONArray(2).getString(1)));
 
-                    switch_bomba.setChecked(MainActivity.stringToBool(dados.getString(10)));
-                    switch_bomba.setEnabled(!MainActivity.stringToBool(config.getString(8)));
+                    switch_bomba.setChecked(MainActivity.stringToBool(rele.getJSONArray(1).getString(0)));
+                    switch_bomba.setEnabled(!MainActivity.stringToBool(rele.getJSONArray(1).getString(1)));
 
-                    toggle_alimentar.setChecked(!MainActivity.stringToBool(config.getString(4)));
-                    toggle_alimentar.setEnabled(!MainActivity.stringToBool(config.getString(4)));
+                    toggle_alimentar.setChecked(!MainActivity.stringToBool(rele.getJSONArray(0).getString(1)));
+                    toggle_alimentar.setEnabled(!MainActivity.stringToBool(rele.getJSONArray(0).getString(1)));
 
-                    int int_temp = Integer.parseInt(dados.getString(2).substring(0,2));
-                    int int_tempMin = Integer.parseInt(config.getString(0));
-                    int int_tempMax = Integer.parseInt(config.getString(1));
+                    int int_temp = Integer.parseInt(sensor.getJSONArray(0).getString(0).substring(0,sensor.getJSONArray(0).getString(0).length()-3));
+                    int int_tempMin = Integer.parseInt(MainActivity.C_TEMP_MIN);
+                    int int_tempMax = Integer.parseInt(MainActivity.C_TEMP_MAX);
                     if(int_temp > int_tempMin && int_temp < int_tempMax){
                         img_temp.setVisibility(View.INVISIBLE);
                     }else if(int_temp > int_tempMax){
@@ -202,8 +199,8 @@ public class Screen_Monitor extends AppCompatActivity {
                         img_temp.setImageResource(R.mipmap.ic_arrow_blue);
                     }
 
-                    float float_ph = Float.parseFloat(dados.getString(5));
-                    float float_ph_config = Float.parseFloat(config.getString(2));
+                    float float_ph = Float.parseFloat(sensor.getJSONArray(2).getString(0));
+                    float float_ph_config = Float.parseFloat(MainActivity.C_PH);
                     if((float_ph_config + 0.90) > float_ph && (float_ph_config - 0.90) < float_ph){
                         img_ph.setVisibility(View.INVISIBLE);
                     }else if((float_ph_config + 0.90) < float_ph ){
@@ -214,8 +211,8 @@ public class Screen_Monitor extends AppCompatActivity {
                         img_ph.setImageResource(R.mipmap.ic_arrow_blue);
                     }
 
-                    float float_vazao = Float.parseFloat(dados.getString(6));
-                    float float_vazao_config = Float.parseFloat(config.getString(3));
+                    float float_vazao = Float.parseFloat(sensor.getJSONArray(1).getString(0));
+                    float float_vazao_config = Float.parseFloat(MainActivity.C_VAZAO);
                     if(float_vazao < float_vazao_config - 10.00){
                         text_vazao.setTextColor(Color.parseColor("#e30917"));
                     }else if(float_vazao < float_vazao_config - 5.00){
@@ -234,7 +231,6 @@ public class Screen_Monitor extends AppCompatActivity {
                 alert1.show();
             }
             if(firstTask) pDialog.dismiss();
-            //else Toast.makeText(atividade, "Informações atualizadas.",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -254,18 +250,18 @@ public class Screen_Monitor extends AppCompatActivity {
                         textShow = "Ligando Iluminação...";
                     else
                         textShow = "Desligando Iluminação...";
-                    param = "query=update_action&luz=1";
+                    param = "id=3&action=1";
                     break;
                 case ACTION_BOMBA:
                     if(switch_bomba.isChecked())
                         textShow = "Ligando Bomba de Água...";
                     else
                         textShow = "Desligando Bomba de Água...";
-                    param = "query=update_action&bomba=1";
+                    param = "id=2&action=1";
                     break;
                 case ACTION_ALIMENTAR:
                         textShow = "Alimentando os peixes. Aguarde;";
-                    param = "query=update_action&motor=1";
+                    param = "id=1&action=1";
                     break;
             }
             Toast.makeText(atividade, textShow ,Toast.LENGTH_LONG).show();
@@ -274,7 +270,7 @@ public class Screen_Monitor extends AppCompatActivity {
         protected JSONObject doInBackground(String... params) {
             JSONObject dados = null;
             try {
-                dados = APIHTTP.getObject(param);
+                dados = APIHTTP.getObject("action","PUT",this.param);
             } catch (Exception e) {
                 Log.i("API", e.getMessage());
                 this.erro = e.getMessage();

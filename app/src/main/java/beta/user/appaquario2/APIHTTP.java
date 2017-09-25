@@ -19,8 +19,8 @@ import java.nio.charset.StandardCharsets;
  */
 
 public class APIHTTP {
-    public static JSONObject getObject(String param) throws ErroAPI, JSONException, IOException {
-        StringBuilder retorno = Connect(param);
+    public static JSONObject getObject(String request,String metodo, String param) throws ErroAPI, JSONException, IOException {
+        StringBuilder retorno = Connect(request, metodo, param);
         if(retorno != null && retorno.length() > 0) {
             hasErro(retorno);
             return new JSONObject(retorno.toString());
@@ -28,8 +28,8 @@ public class APIHTTP {
         throw new ErroAPI("Não foi possivel ler o retorno do Banco de dados.","Comunicação foi interrompida");
     }
 
-    public static JSONArray getArray(String param) throws JSONException, ErroAPI, IOException {
-        StringBuilder retorno = Connect(param);
+    public static JSONArray getArray(String request, String metodo, String param) throws JSONException, ErroAPI, IOException {
+        StringBuilder retorno = Connect(request, metodo, param);
         if(retorno != null && retorno.length() > 0) {
             hasErro(retorno);
             return new JSONArray(retorno.toString());
@@ -47,24 +47,24 @@ public class APIHTTP {
         }
     }
 
-    private static StringBuilder Connect(String param) throws IOException {
+    private static StringBuilder Connect(String request, String metodo, String param) throws IOException {
         HttpURLConnection connection;
         StringBuilder sb = new StringBuilder();
-            URL url = new URL("http://www.vssistemas.com.br/arduino_query.php");
-
-            byte[] postData = param.getBytes(StandardCharsets.UTF_8);
+            URL url = new URL("http://www.vssistemas.com.br/aquario_monitor/"+request);
 
             connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
             connection.setDoInput(true);
             connection.setInstanceFollowRedirects(false);
             connection.setUseCaches(false);
-            connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setRequestProperty("charset", "utf-8");
-            connection.setRequestProperty("Content-Length", Integer.toString(postData.length));
-
-            connection.getOutputStream().write(postData);
+            connection.setRequestMethod(metodo);
+            if(metodo != "GET" && metodo != "DELETE") {
+                byte[] postData = param.getBytes(StandardCharsets.UTF_8);
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Length", Integer.toString(postData.length));
+                connection.getOutputStream().write(postData);
+            }
 
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
@@ -75,7 +75,6 @@ public class APIHTTP {
                 br.close();
                 connection.disconnect();
             }
-
         Log.i("API_Retorno",sb.toString());
         return sb;
     }

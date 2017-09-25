@@ -6,6 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
+    public static String C_TEMP_MIN = "0";
+    public static String C_TEMP_MAX = "0";
+    public static String C_PH = "0.00";
+    public static String C_VAZAO = "0.00";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

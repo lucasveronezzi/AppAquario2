@@ -39,8 +39,7 @@ public class Screen_Config extends AppCompatActivity {
     private static final String KEY_STATE_EDIT = "state_edit";
     private final int SET_CONFIG = 0;
     private final int GET_CONFIG = 1;
-    private List<Integer> list_del_ag_luz;
-    private List<Integer> list_del_ag_alimentacao;
+    private List<Integer> list_del_agenda = new ArrayList<Integer>();;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,8 +91,8 @@ public class Screen_Config extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        TaskConfig task = new TaskConfig(GET_CONFIG);
-        task.execute("query=get_config");
+        TaskConfig task = new TaskConfig("GET");
+        task.execute("");
     }
 
     @Override
@@ -118,11 +117,7 @@ public class Screen_Config extends AppCompatActivity {
         LinearLayout lnPai = (LinearLayout) ((ViewGroup) v.getParent()).getParent();
         LinearLayout lnChild = (LinearLayout) v.getParent();
         if(lnChild.getId() > 0){
-            if(lnPai.getId() == R.id.ln_agenda_luz){
-                list_del_ag_luz.add(lnChild.getId());
-            }else if(lnPai.getId() == R.id.ln_agenda_motor){
-                list_del_ag_alimentacao.add(lnChild.getId());
-            }
+            list_del_agenda.add(lnChild.getId());
         }
         lnPai.removeView(lnChild);
     }
@@ -149,7 +144,7 @@ public class Screen_Config extends AppCompatActivity {
 
                 setViewEditable(stateEdtiLayout);
 
-                TaskConfig task = new TaskConfig(SET_CONFIG);
+                TaskConfig task = new TaskConfig("PUT");
                 task.execute(getParam());
             }else{
                 stateEdtiLayout = true;
@@ -162,51 +157,46 @@ public class Screen_Config extends AppCompatActivity {
     }
 
     private String getParam(){
-        String array_ag_luz = "";
+        String id_rele = "&id_rele=";
+        String id_agenda = "&agenda_id=";
+        String data_begin = "&data_begin=";
+        String data_end = "&data_end=";
+        String repetir = "&repetir=";
         LinearLayout ln_agenda = (LinearLayout) findViewById(R.id.ln_agenda_luz);
         for(int x=1; x < ln_agenda.getChildCount()-1;x++){
             LinearLayout l = (LinearLayout) ln_agenda.getChildAt(x);
-            array_ag_luz += "|" + l.getId() + ";" +
-                    ( (Button) l.getChildAt(1) ).getText() + ";" +
-                    ( (Button) l.getChildAt(3) ).getText();
+            id_rele += "3,";
+            id_agenda += l.getId() + ",";
+            data_begin += ( (Button) l.getChildAt(1) ).getText() + ",";
+            data_end += ( (Button) l.getChildAt(3) ).getText() + ",";
+            repetir += "0,";
         }
-        if(array_ag_luz.length() > 0)
-            array_ag_luz = array_ag_luz.substring(1);
-
-        String array_ag_alimentar = "";
         ln_agenda = (LinearLayout) findViewById(R.id.ln_agenda_motor);
         for(int x=1; x < ln_agenda.getChildCount()-1;x++){
             LinearLayout l = (LinearLayout) ln_agenda.getChildAt(x);
-            array_ag_alimentar += "|" + l.getId() + ";" +
-                    ( (Button) l.getChildAt(1) ).getText() + ";" +
-                    ( (EditText) l.getChildAt(3) ).getText();
+            id_rele += "1,";
+            id_agenda += l.getId() + ",";
+            data_begin += ( (Button) l.getChildAt(1) ).getText()  + ",";
+            data_end += "0";
+            repetir += ( (EditText) l.getChildAt(3) ).getText() + ",";
         }
-        if(array_ag_alimentar.length() > 0)
-            array_ag_alimentar = array_ag_alimentar.substring(1);
 
-        String array_del_luz = "";
-        for(int x=0; x < list_del_ag_luz.size();x++){
-            array_del_luz += "|" + list_del_ag_luz.get(x);
+        if(id_rele.endsWith(",")){
+            id_rele = id_rele.substring(0,id_rele.length()-1);
+            id_agenda=  id_agenda.substring(0,id_agenda.length()-1);
+            data_begin = data_begin.substring(0,data_begin.length()-1);
+            data_end = data_end.substring(0,data_end.length()-1);
+            repetir = repetir.substring(0,repetir.length()-1);
         }
-        if(array_del_luz.length() > 0)
-            array_del_luz = array_del_luz.substring(1);
 
-        String array_del_alimentar = "";
-        for(int x=0; x < list_del_ag_alimentacao.size();x++){
-            array_del_alimentar += "|" + list_del_ag_alimentacao.get(x);;
-        }
-        if(array_del_alimentar.length() > 0)
-            array_del_alimentar = array_del_alimentar.substring(1);
-
-        return  "query=save_config" +
-                "&temp_min="+ bar_temp_min.getProgress() +
-                "&temp_max="+bar_temp_max.getProgress() +
-                "&ph="+textPH.getText() +
-                "&vazao="+textVazao.getText() +
-                "&ag_luz="+array_ag_luz +
-                "&ag_alimentar="+array_ag_alimentar +
-                "&del_luz=" + array_del_luz +
-                "&del_alimentar=" + array_del_alimentar;
+        return  "id=1,2,3" +
+                "&value_min="+bar_temp_min.getProgress()+","+textVazao.getText()+","+textPH.getText()+
+                "&value_max="+bar_temp_max.getProgress()+",0,0"+
+                id_rele+
+                id_agenda+
+                data_begin+
+                data_end+
+                repetir;
     }
 
     private void setViewEditable(boolean stat) {
@@ -288,20 +278,18 @@ public class Screen_Config extends AppCompatActivity {
         private ProgressDialog pDialog;
         private String text_dialog;
         private String erro;
-        private int op;
+        private String metodo;
+        private String path;
 
-        private TaskConfig(int op){
-            this.op = op;
-            if(op == GET_CONFIG){
+        private TaskConfig(String metodo){
+            this.metodo = metodo;
+            if(metodo == "GET"){
                 text_dialog = "Carregando informações...";
             }else{
                 text_dialog = "Salvando informações...";
             }
         }
         protected void onPreExecute(){
-            list_del_ag_alimentacao = new ArrayList<Integer>();
-            list_del_ag_luz = new ArrayList<Integer>();
-
             pDialog = new ProgressDialog(atividade);
             pDialog.setMessage(text_dialog);
             pDialog.setIndeterminate(false);
@@ -312,7 +300,12 @@ public class Screen_Config extends AppCompatActivity {
         protected JSONArray doInBackground(String... param) {
             JSONArray dados = null;
             try {
-                dados = APIHTTP.getArray(param[0]);
+                dados = APIHTTP.getArray("setup/agendamento",metodo,param[0]);
+
+                for(int x=0; x < list_del_agenda.size();x++){
+                    APIHTTP.getArray("setup/agendamento/"+list_del_agenda.get(x),"DELETE","");
+                }
+                list_del_agenda = new ArrayList<Integer>();
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.i("API", e.getMessage());
@@ -325,35 +318,39 @@ public class Screen_Config extends AppCompatActivity {
         protected void onPostExecute(JSONArray array){
             if(array != null){
                 try {
-                    if(op == GET_CONFIG) {
-                        JSONArray agenda_alimentar = array.getJSONArray(0);
-                        JSONArray agenda_luz = array.getJSONArray(1);
-                        JSONArray config = array.getJSONArray(2);
+                    if(metodo == "GET") {
+                        JSONArray agenda = array.getJSONArray(1);
+                        JSONArray config = array.getJSONArray(0);
 
-                        bar_temp_min.setProgress(Integer.parseInt(config.getString(0)));
-                        bar_temp_max.setProgress(Integer.parseInt(config.getString(1)));
-                        textPH.setText(config.getString(2));
-                        textVazao.setText(config.getString(3));
+                        bar_temp_min.setProgress(Integer.parseInt(config.getJSONArray(0).getString(1).substring(0,config.getJSONArray(0).getString(1).length()-3)));
+                        bar_temp_max.setProgress(Integer.parseInt(config.getJSONArray(0).getString(2).substring(0,config.getJSONArray(0).getString(2).length()-3)));
+                        textPH.setText(config.getJSONArray(2).getString(1));
+                        textVazao.setText(config.getJSONArray(1).getString(1));
 
-                        for (int x = 0; x < agenda_alimentar.length(); x++) {
-                            JSONArray arr = agenda_alimentar.getJSONArray(x);
-                            addAgendamento(findViewById(R.id.btn_add_alimenta));
-                            ln.setId(Integer.parseInt(arr.getString(0)));
-                            ((Button) ln.getChildAt(1)).setText(arr.getString(1).substring(0, 5));
-                            ((EditText) ln.getChildAt(3)).setText(arr.getString(2));
-                        }
-                        for (int x = 0; x < agenda_luz.length(); x++) {
-                            JSONArray arr = agenda_luz.getJSONArray(x);
-                            addAgendamento(findViewById(R.id.btn_add_luz));
-                            ln.setId(Integer.parseInt(arr.getString(0)));
-                            ((Button) ln.getChildAt(1)).setText(arr.getString(1).substring(0, 5));
-                            ((Button) ln.getChildAt(3)).setText(arr.getString(2).substring(0, 5));
+                        for (int x = 0; x < agenda.length(); x++) {
+                            if(agenda.getJSONArray(x).getString(1).contentEquals("1")) {
+                                JSONArray agenda_alimentar = agenda.getJSONArray(x);
+                                addAgendamento(findViewById(R.id.btn_add_alimenta));
+                                ln.setId(Integer.parseInt(agenda_alimentar.getString(0)));
+                                ((Button) ln.getChildAt(1)).setText(agenda_alimentar.getString(2).substring(0, 5));
+                                ((EditText) ln.getChildAt(3)).setText(agenda_alimentar.getString(4));
+                            }else if(agenda.getJSONArray(x).getString(1).contentEquals("3")) {
+                                JSONArray agenda_luz = agenda.getJSONArray(x);
+                                addAgendamento(findViewById(R.id.btn_add_luz));
+                                ln.setId(Integer.parseInt(agenda_luz.getString(0)));
+                                ((Button) ln.getChildAt(1)).setText(agenda_luz.getString(2).substring(0, 5));
+                                ((Button) ln.getChildAt(3)).setText(agenda_luz.getString(3).substring(0, 5));
+                            }
                         }
 
                         setViewEditable(stateEdtiLayout);
                     }else{
                         Toast.makeText(atividade, "Salvo.",Toast.LENGTH_LONG).show();
                     }
+                    MainActivity.C_TEMP_MIN = Integer.toString(bar_temp_min.getProgress());
+                    MainActivity.C_TEMP_MAX = Integer.toString(bar_temp_max.getProgress());
+                    MainActivity.C_PH = textPH.getText().toString();
+                    MainActivity.C_VAZAO = textVazao.getText().toString();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
