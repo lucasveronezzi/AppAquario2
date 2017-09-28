@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:background="@color/colorPrimaryDark"
+            android:onClick="open_screen_grafico"
             android:text="Estatísticas"
             android:textColor="@android:color/background_light" />
 

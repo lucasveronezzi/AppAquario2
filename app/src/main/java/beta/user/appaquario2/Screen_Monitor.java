@@ -1,13 +1,10 @@
 package beta.user.appaquario2;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -37,6 +34,7 @@ public class Screen_Monitor extends AppCompatActivity {
     private ToggleButton toggle_cooler;
     private TextView text_hora_cooler;
     private TextView text_data_cooler;
+    private TextView text_date_motor;
     private ImageView img_temp;
     private ImageView img_ph;
     private Timer timer;
@@ -57,6 +55,7 @@ public class Screen_Monitor extends AppCompatActivity {
         text_vazao = (TextView) findViewById(R.id.text_vazao);
         text_hora_cooler = (TextView) findViewById(R.id.text_hora_cooler);
         text_data_cooler = (TextView) findViewById(R.id.text_data_cooler);
+        text_date_motor = (TextView) findViewById(R.id.text_date_motor);
         switch_bomba = (Switch) findViewById(R.id.switch_bomba);
         toggle_alimentar = (ToggleButton) findViewById(R.id.toggle_alimentar);
         toggle_cooler = (ToggleButton) findViewById(R.id.toggle_cooler);
@@ -168,6 +167,7 @@ public class Screen_Monitor extends AppCompatActivity {
 
                     toggle_alimentar.setChecked(!MainActivity.stringToBool(rele.getJSONArray(0).getString(1)));
                     toggle_alimentar.setEnabled(!MainActivity.stringToBool(rele.getJSONArray(0).getString(1)));
+                    text_date_motor.setText(FormataData.formatToString(rele.getJSONArray(0).getString(2), "HH:mm (dd/MM/yyyy)"));
 
                     int int_temp = Integer.parseInt(sensor.getJSONArray(0).getString(0).substring(0,sensor.getJSONArray(0).getString(0).length()-3));
                     int int_tempMin = Integer.parseInt(MainActivity.C_TEMP_MIN);
