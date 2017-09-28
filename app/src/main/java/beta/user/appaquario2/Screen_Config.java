@@ -162,10 +162,10 @@ public class Screen_Config extends AppCompatActivity {
         String data_begin = "&data_begin=";
         String data_end = "&data_end=";
         String repetir = "&repetir=";
-        LinearLayout ln_agenda = (LinearLayout) findViewById(R.id.ln_agenda_luz);
+        LinearLayout ln_agenda = (LinearLayout) findViewById(R.id.ln_agenda_bomba);
         for(int x=1; x < ln_agenda.getChildCount()-1;x++){
             LinearLayout l = (LinearLayout) ln_agenda.getChildAt(x);
-            id_rele += "3,";
+            id_rele += "2,";
             id_agenda += l.getId() + ",";
             data_begin += ( (Button) l.getChildAt(1) ).getText() + ",";
             data_end += ( (Button) l.getChildAt(3) ).getText() + ",";
@@ -334,12 +334,12 @@ public class Screen_Config extends AppCompatActivity {
                                 ln.setId(Integer.parseInt(agenda_alimentar.getString(0)));
                                 ((Button) ln.getChildAt(1)).setText(agenda_alimentar.getString(2).substring(0, 5));
                                 ((EditText) ln.getChildAt(3)).setText(agenda_alimentar.getString(4));
-                            }else if(agenda.getJSONArray(x).getString(1).contentEquals("3")) {
-                                JSONArray agenda_luz = agenda.getJSONArray(x);
-                                addAgendamento(findViewById(R.id.btn_add_luz));
-                                ln.setId(Integer.parseInt(agenda_luz.getString(0)));
-                                ((Button) ln.getChildAt(1)).setText(agenda_luz.getString(2).substring(0, 5));
-                                ((Button) ln.getChildAt(3)).setText(agenda_luz.getString(3).substring(0, 5));
+                            }else if(agenda.getJSONArray(x).getString(1).contentEquals("2")) {
+                                JSONArray agenda_bomba = agenda.getJSONArray(x);
+                                addAgendamento(findViewById(R.id.btn_add_bomba));
+                                ln.setId(Integer.parseInt(agenda_bomba.getString(0)));
+                                ((Button) ln.getChildAt(1)).setText(agenda_bomba.getString(2).substring(0, 5));
+                                ((Button) ln.getChildAt(3)).setText(agenda_bomba.getString(3).substring(0, 5));
                             }
                         }
 

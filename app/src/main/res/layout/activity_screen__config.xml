@@ -180,7 +180,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/ln_agenda_luz"
+                android:id="@+id/ln_agenda_bomba"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
@@ -194,12 +194,12 @@
                     android:layout_marginBottom="20dp"
                     android:layout_weight="0.1"
                     android:gravity="center"
-                    android:text="Agendamento - Iluminação (h:m)"
+                    android:text="Agendamento - Bomba de Água (H:m)"
                     android:textColor="@color/colorEditDisable"
                     android:textSize="18sp" />
 
                 <Button
-                    android:id="@+id/btn_add_luz"
+                    android:id="@+id/btn_add_bomba"
                     android:layout_width="137dp"
                     android:layout_height="37dp"
                     android:onClick="addAgendamento"
@@ -221,7 +221,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
                     android:gravity="center"
-                    android:text="Agendamento - Alimentação (h:m)"
+                    android:text="Agendamento - Alimentação (H:m)"
                     android:textColor="@color/colorEditDisable"
                     android:textSize="18sp" />
 

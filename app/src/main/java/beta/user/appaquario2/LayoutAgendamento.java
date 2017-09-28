@@ -36,7 +36,7 @@ public class LayoutAgendamento extends LinearLayout {
         LinearLayout.LayoutParams lp_textView = new LinearLayout.LayoutParams(100,ViewGroup.LayoutParams.WRAP_CONTENT);
         lp_textView.setMargins(10,0,0,0);
 
-        if(lnParent.getId() == R.id.ln_agenda_luz) {
+        if(lnParent.getId() == R.id.ln_agenda_bomba) {
             createTextView("Desligar: ", lp_textView);
             createButton();
         } else {

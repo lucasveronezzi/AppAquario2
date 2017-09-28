@@ -32,7 +32,6 @@ public class Screen_Monitor extends AppCompatActivity {
     private TextView text_tempMax;
     private TextView text_PH;
     private TextView text_vazao;
-    private Switch switch_luz;
     private Switch switch_bomba;
     private ToggleButton toggle_alimentar;
     private ToggleButton toggle_cooler;
@@ -42,7 +41,6 @@ public class Screen_Monitor extends AppCompatActivity {
     private ImageView img_ph;
     private Timer timer;
 
-    private static final int ACTION_LUZ = 0;
     private static final int ACTION_BOMBA = 1;
     private static final int ACTION_ALIMENTAR = 2;
 
@@ -59,7 +57,6 @@ public class Screen_Monitor extends AppCompatActivity {
         text_vazao = (TextView) findViewById(R.id.text_vazao);
         text_hora_cooler = (TextView) findViewById(R.id.text_hora_cooler);
         text_data_cooler = (TextView) findViewById(R.id.text_data_cooler);
-        switch_luz = (Switch) findViewById(R.id.switch_luz);
         switch_bomba = (Switch) findViewById(R.id.switch_bomba);
         toggle_alimentar = (ToggleButton) findViewById(R.id.toggle_alimentar);
         toggle_cooler = (ToggleButton) findViewById(R.id.toggle_cooler);
@@ -89,12 +86,6 @@ public class Screen_Monitor extends AppCompatActivity {
     public void onDestroy(){
         super.onDestroy();
         timer.cancel();
-    }
-
-    public void actionLuz(View v){
-        switch_luz.setEnabled(false);
-        TaskAction task = new TaskAction(ACTION_LUZ);
-        task.execute();
     }
 
     public void actionBomba(View v){
@@ -152,9 +143,9 @@ public class Screen_Monitor extends AppCompatActivity {
                     text_PH.setText(sensor.getJSONArray(2).getString(0));
                     text_vazao.setText(sensor.getJSONArray(1).getString(0) + " (L/m)");
 
-                    text_hora_cooler.setText(FormataData.formatToString(rele.getJSONArray(3).getString(2),"HH:mm"));
-                    text_data_cooler.setText(FormataData.formatToString(rele.getJSONArray(3).getString(2),"dd/MM/yyyy"));
-                    if(MainActivity.stringToBool(rele.getJSONArray(3).getString(0))){
+                    text_hora_cooler.setText(FormataData.formatToString(rele.getJSONArray(2).getString(2),"HH:mm"));
+                    text_data_cooler.setText(FormataData.formatToString(rele.getJSONArray(2).getString(2),"dd/MM/yyyy"));
+                    if(MainActivity.stringToBool(rele.getJSONArray(2).getString(0))){
                         toggle_cooler.setChecked(true);
                         toggle_cooler.setTextColor(Color.parseColor("#fff17a0a"));
                     }else{
@@ -163,11 +154,6 @@ public class Screen_Monitor extends AppCompatActivity {
                     }
 
                     if(!firstTask){
-                        if(switch_luz.isChecked() && !MainActivity.stringToBool(rele.getJSONArray(2).getString(0)) )
-                            Toast.makeText(atividade, "Iluminação Desligada!",Toast.LENGTH_LONG);
-                        if(!switch_luz.isChecked() && MainActivity.stringToBool(rele.getJSONArray(2).getString(0)) )
-                            Toast.makeText(atividade, "Iluminação Ligada!",Toast.LENGTH_LONG);
-
                         if(switch_bomba.isChecked() && !MainActivity.stringToBool(rele.getJSONArray(1).getString(0)) )
                             Toast.makeText(atividade, "Bomba de Água Desligada!",Toast.LENGTH_LONG);
                         if(!switch_bomba.isChecked() && MainActivity.stringToBool(rele.getJSONArray(1).getString(0)) )
@@ -176,9 +162,6 @@ public class Screen_Monitor extends AppCompatActivity {
                         if(!toggle_alimentar.isChecked() && !MainActivity.stringToBool(rele.getJSONArray(0).getString(1)) )
                             Toast.makeText(atividade, "Os peixes foram alimentados!",Toast.LENGTH_LONG);
                     }
-
-                    switch_luz.setChecked(MainActivity.stringToBool(rele.getJSONArray(2).getString(0)));
-                    switch_luz.setEnabled(!MainActivity.stringToBool(rele.getJSONArray(2).getString(1)));
 
                     switch_bomba.setChecked(MainActivity.stringToBool(rele.getJSONArray(1).getString(0)));
                     switch_bomba.setEnabled(!MainActivity.stringToBool(rele.getJSONArray(1).getString(1)));
@@ -245,13 +228,6 @@ public class Screen_Monitor extends AppCompatActivity {
             super.onPreExecute();
             String textShow = "";
             switch (action){
-                case ACTION_LUZ:
-                    if(switch_luz.isChecked())
-                        textShow = "Ligando Iluminação...";
-                    else
-                        textShow = "Desligando Iluminação...";
-                    param = "id=3&action=1";
-                    break;
                 case ACTION_BOMBA:
                     if(switch_bomba.isChecked())
                         textShow = "Ligando Bomba de Água...";
@@ -282,10 +258,6 @@ public class Screen_Monitor extends AppCompatActivity {
             if(array != null){
             }else{
                 switch (action){
-                    case ACTION_LUZ:
-                        switch_luz.setEnabled(true);
-                        switch_luz.setChecked(!switch_luz.isChecked());
-                        break;
                     case ACTION_BOMBA:
                         switch_bomba.setEnabled(true);
                         switch_bomba.setChecked(!switch_bomba.isChecked());
