@@ -27,7 +27,7 @@
             android:name=".Screen_Monitor"
             android:label="@string/monitor_name"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".Screen_grafico"
+        <activity android:name=".Graficos.Screen_grafico"
             android:label="@string/grafico_name"
             android:parentActivityName=".MainActivity"></activity>
     </application>

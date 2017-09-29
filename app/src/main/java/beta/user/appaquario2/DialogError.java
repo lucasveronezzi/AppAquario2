@@ -1,6 +1,5 @@
 package beta.user.appaquario2;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
@@ -12,7 +11,7 @@ import android.support.v7.app.AlertDialog;
 
 public class DialogError extends AlertDialog {
     private AlertDialog dialog;
-    protected DialogError(@NonNull final FragmentActivity activity, String erro) {
+    public DialogError(@NonNull final FragmentActivity activity, String erro) {
         super(activity);
         Builder builder1 = new Builder(activity);
         builder1.setTitle("Erro");
