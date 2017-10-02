@@ -15,11 +15,32 @@
         android:gravity="center"
         android:orientation="vertical">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="15dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ultima atualização: "
+                android:textColor="@color/colorTitleTextView"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/text_date_att"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" 16:40 02/10/2017"
+                android:textColor="@color/colorTitleTextView"
+                android:textSize="14sp" />
+        </LinearLayout>
         <TextView
             android:id="@+id/textView7"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:text="Status dos Sensores"
             android:textColor="@android:color/holo_orange_light"
             android:textSize="20sp"

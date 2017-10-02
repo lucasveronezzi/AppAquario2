@@ -11,6 +11,10 @@ import android.support.v7.app.AlertDialog;
 
 public class DialogError extends AlertDialog {
     private AlertDialog dialog;
+    private boolean showing = false;
+    public DialogError(@NonNull final FragmentActivity activity){
+        super(activity);
+    }
     public DialogError(@NonNull final FragmentActivity activity, final String titulo,String erro) {
         super(activity);
         Builder builder1 = new Builder(activity);
@@ -23,12 +27,18 @@ public class DialogError extends AlertDialog {
                     public void onClick(DialogInterface dialog, int id) {
                         if(titulo == "Erro")
                         activity.onBackPressed();
+                        showing = false;
                         dialog.cancel();
                     }
                 });
         dialog = builder1.create();
     }
     public void show(){
+        showing = true;
         dialog.show();
+    }
+    @Override
+    public boolean isShowing(){
+        return showing;
     }
 }

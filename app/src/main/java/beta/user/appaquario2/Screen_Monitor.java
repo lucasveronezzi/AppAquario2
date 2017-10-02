@@ -19,6 +19,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -30,6 +32,7 @@ public class Screen_Monitor extends AppCompatActivity {
     private TextView text_tempMax;
     private TextView text_PH;
     private TextView text_vazao;
+    private TextView text_date_att;
     private Switch switch_bomba;
     private ToggleButton toggle_alimentar;
     private ToggleButton toggle_cooler;
@@ -40,6 +43,7 @@ public class Screen_Monitor extends AppCompatActivity {
     private ImageView img_ph;
     private Timer timer;
 
+    private DialogError alert1;
     private static final int ACTION_BOMBA = 1;
     private static final int ACTION_ALIMENTAR = 2;
 
@@ -59,6 +63,7 @@ public class Screen_Monitor extends AppCompatActivity {
         text_hora_cooler = (TextView) findViewById(R.id.text_hora_cooler);
         text_data_cooler = (TextView) findViewById(R.id.text_data_cooler);
         text_date_motor = (TextView) findViewById(R.id.text_date_motor);
+        text_date_att = (TextView) findViewById(R.id.text_date_att);
         switch_bomba = (Switch) findViewById(R.id.switch_bomba);
         toggle_alimentar = (ToggleButton) findViewById(R.id.toggle_alimentar);
         toggle_cooler = (ToggleButton) findViewById(R.id.toggle_cooler);
@@ -104,7 +109,6 @@ public class Screen_Monitor extends AppCompatActivity {
 
     private class TaskMonitor extends AsyncTask<String, Void, JSONArray> {
         private ProgressDialog pDialog;
-        private DialogError alert1;
         private String erro;
         private Boolean firstTask;
         private TaskMonitor(Boolean firstTask){
@@ -141,13 +145,16 @@ public class Screen_Monitor extends AppCompatActivity {
                     JSONArray rele = array.getJSONArray(1);
 
                     if( MainActivity.stringToBool(sensor.getJSONArray(0).getString(3)) ){
-                        if(!alert1.isShowing()) {
+                        if(alert1 == null || !alert1.isShowing()) {
                             alert1 = new DialogError(atividade, "Atenção",
                                     "Faz mais de 5 minutos que o monitor não é atualizado pelo arduino.\n" +
                                             "O equipamento pode estar desligado ou sem acesso a internet para atualizar o monitor.");
                             alert1.show();
                         }
                     }
+                    Date currentTime = Calendar.getInstance().getTime();
+                    String date_att = FormataData.formatToString(sensor.getJSONArray(0).getString(4),"");
+
 
                     text_temp.setText(sensor.getJSONArray(0).getString(0).substring(0,sensor.getJSONArray(0).getString(0).length()-3) + "°C");
                     text_tempMin.setText(sensor.getJSONArray(0).getString(1).substring(0,sensor.getJSONArray(0).getString(1).length()-3) + "°");
@@ -211,6 +218,12 @@ public class Screen_Monitor extends AppCompatActivity {
                     float float_vazao_config = Float.parseFloat(MainActivity.C_VAZAO);
                     if(float_vazao < float_vazao_config - 10.00){
                         text_vazao.setTextColor(Color.parseColor("#e30917"));
+                        if(firstTask&& (alert1 == null || !alert1.isShowing()) ) {
+                            alert1 = new DialogError(atividade, "Atenção",
+                                    "O nível de vazão de água está abaixo que o configurado: "+float_vazao_config+".\n\n" +
+                                            "Verifique se o filtro está sujo.");
+                            alert1.show();
+                        }
                     }else if(float_vazao < float_vazao_config - 5.00){
                         text_vazao.setTextColor(Color.parseColor("#ffff00"));
                     }else{
@@ -221,10 +234,12 @@ public class Screen_Monitor extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }else{
-                alert1 = new DialogError(atividade, "Erro",erro);
-                if(timer != null)
-                    timer.cancel();
-                alert1.show();
+                if(alert1 == null || !alert1.isShowing()) {
+                    alert1 = new DialogError(atividade, "Erro", erro);
+                    if (timer != null)
+                        timer.cancel();
+                    alert1.show();
+                }
             }
             if(firstTask) pDialog.dismiss();
         }
@@ -280,7 +295,7 @@ public class Screen_Monitor extends AppCompatActivity {
                         toggle_alimentar.setChecked(!toggle_alimentar.isChecked());
                         break;
                 }
-                DialogError alert1 = new DialogError(atividade, "Erro",erro);
+                alert1 = new DialogError(atividade, "Erro",erro);
                 timer.cancel();
                 alert1.show();
             }
