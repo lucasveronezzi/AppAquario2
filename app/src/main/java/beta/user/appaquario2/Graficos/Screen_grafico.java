@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -32,6 +33,8 @@ public class Screen_grafico extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         atividade = this;
         setContentView(R.layout.activity_screen_grafico);
         chart = (LineChart) findViewById(R.id.chart);
@@ -92,7 +95,7 @@ public class Screen_grafico extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }else{
-                DialogError alert1 = new DialogError(atividade, erro);
+                DialogError alert1 = new DialogError(atividade,"Erro", erro);
                 alert1.show();
             }
             pDialog.dismiss();

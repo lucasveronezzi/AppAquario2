@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -44,6 +45,8 @@ public class Screen_Config extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         if (savedInstanceState != null) {
             stateEdtiLayout= savedInstanceState.getBoolean(KEY_STATE_EDIT);
         }
@@ -114,12 +117,12 @@ public class Screen_Config extends AppCompatActivity {
     }
 
     public void removeAgendamento(View v){
-        LinearLayout lnPai = (LinearLayout) ((ViewGroup) v.getParent()).getParent();
+        //LinearLayout lnPai = (LinearLayout) ((ViewGroup) v.getParent()).getParent();
         LinearLayout lnChild = (LinearLayout) v.getParent();
         if(lnChild.getId() > 0){
             list_del_agenda.add(lnChild.getId());
         }
-        lnPai.removeView(lnChild);
+        ((LinearLayout) lnChild.getParent() ).removeView(lnChild);
     }
 
     @Override
@@ -355,7 +358,7 @@ public class Screen_Config extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }else{
-                DialogError alert1 = new DialogError(atividade, erro);
+                DialogError alert1 = new DialogError(atividade,"Erro", erro);
                 alert1.show();
              }
             pDialog.dismiss();

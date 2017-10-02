@@ -11,16 +11,17 @@ import android.support.v7.app.AlertDialog;
 
 public class DialogError extends AlertDialog {
     private AlertDialog dialog;
-    public DialogError(@NonNull final FragmentActivity activity, String erro) {
+    public DialogError(@NonNull final FragmentActivity activity, final String titulo,String erro) {
         super(activity);
         Builder builder1 = new Builder(activity);
-        builder1.setTitle("Erro");
+        builder1.setTitle(titulo);
         builder1.setMessage(erro);
         builder1.setCancelable(false);
         builder1.setPositiveButton(
                 "Fechar",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        if(titulo == "Erro")
                         activity.onBackPressed();
                         dialog.cancel();
                     }

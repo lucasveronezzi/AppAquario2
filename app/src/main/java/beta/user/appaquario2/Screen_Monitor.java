@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -45,6 +46,8 @@ public class Screen_Monitor extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_screen__monitor);
         atividade = this;
 
@@ -101,6 +104,7 @@ public class Screen_Monitor extends AppCompatActivity {
 
     private class TaskMonitor extends AsyncTask<String, Void, JSONArray> {
         private ProgressDialog pDialog;
+        private DialogError alert1;
         private String erro;
         private Boolean firstTask;
         private TaskMonitor(Boolean firstTask){
@@ -136,6 +140,15 @@ public class Screen_Monitor extends AppCompatActivity {
                     JSONArray sensor = array.getJSONArray(0);
                     JSONArray rele = array.getJSONArray(1);
 
+                    if( MainActivity.stringToBool(sensor.getJSONArray(0).getString(3)) ){
+                        if(!alert1.isShowing()) {
+                            alert1 = new DialogError(atividade, "Atenção",
+                                    "Faz mais de 5 minutos que o monitor não é atualizado pelo arduino.\n" +
+                                            "O equipamento pode estar desligado ou sem acesso a internet para atualizar o monitor.");
+                            alert1.show();
+                        }
+                    }
+
                     text_temp.setText(sensor.getJSONArray(0).getString(0).substring(0,sensor.getJSONArray(0).getString(0).length()-3) + "°C");
                     text_tempMin.setText(sensor.getJSONArray(0).getString(1).substring(0,sensor.getJSONArray(0).getString(1).length()-3) + "°");
                     text_tempMax.setText(sensor.getJSONArray(0).getString(2).substring(0,sensor.getJSONArray(0).getString(2).length()-3) + "°");
@@ -148,7 +161,7 @@ public class Screen_Monitor extends AppCompatActivity {
                         toggle_cooler.setChecked(true);
                         toggle_cooler.setTextColor(Color.parseColor("#fff17a0a"));
                     }else{
-                        toggle_cooler.setChecked(true);
+                        toggle_cooler.setChecked(false);
                         toggle_cooler.setTextColor(Color.parseColor("#60000000"));
                     }
 
@@ -208,7 +221,7 @@ public class Screen_Monitor extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }else{
-                DialogError alert1 = new DialogError(atividade, erro);
+                alert1 = new DialogError(atividade, "Erro",erro);
                 if(timer != null)
                     timer.cancel();
                 alert1.show();
@@ -267,7 +280,7 @@ public class Screen_Monitor extends AppCompatActivity {
                         toggle_alimentar.setChecked(!toggle_alimentar.isChecked());
                         break;
                 }
-                DialogError alert1 = new DialogError(atividade, erro);
+                DialogError alert1 = new DialogError(atividade, "Erro",erro);
                 timer.cancel();
                 alert1.show();
             }
