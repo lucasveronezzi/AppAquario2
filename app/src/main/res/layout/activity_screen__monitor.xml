@@ -33,7 +33,6 @@
                 android:id="@+id/text_date_att"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" 16:40 02/10/2017"
                 android:textColor="@color/colorTitleTextView"
                 android:textSize="14sp" />
         </LinearLayout>

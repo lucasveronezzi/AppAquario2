@@ -20,9 +20,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class Screen_Monitor extends AppCompatActivity {
 
@@ -41,7 +38,7 @@ public class Screen_Monitor extends AppCompatActivity {
     private TextView text_date_motor;
     private ImageView img_temp;
     private ImageView img_ph;
-    private Timer timer;
+    //private Timer timer;
 
     private DialogError alert1;
     private static final int ACTION_BOMBA = 1;
@@ -72,9 +69,18 @@ public class Screen_Monitor extends AppCompatActivity {
 
         TaskMonitor task = new TaskMonitor(true);
         task.execute();
+        task.
 
         final Handler handler = new Handler();
-        timer = new Timer();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                TaskMonitor task = new TaskMonitor(false);
+                task.execute();
+                handler.postDelayed(this,10000);
+            }
+        }, 10000);
+        /*timer = new Timer();
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -86,13 +92,13 @@ public class Screen_Monitor extends AppCompatActivity {
                 });
             }
         };
-        timer.schedule(timerTask, 15000, 15000);;
+        timer.schedule(timerTask, 15000, 15000);;*/
     }
 
     @Override
     public void onDestroy(){
         super.onDestroy();
-        timer.cancel();
+        //timer.cancel();
     }
 
     public void actionBomba(View v){
@@ -123,7 +129,7 @@ public class Screen_Monitor extends AppCompatActivity {
                 pDialog.setCancelable(false);
                 pDialog.show();
             }else{
-                //Toast.makeText(atividade, "Atualizando informações...",Toast.LENGTH_SHORT).show();
+                Toast.makeText(atividade, "Atualizando informações...",Toast.LENGTH_SHORT).show();
             }
         }
         @Override
@@ -144,7 +150,24 @@ public class Screen_Monitor extends AppCompatActivity {
                     JSONArray sensor = array.getJSONArray(0);
                     JSONArray rele = array.getJSONArray(1);
 
-                    if( MainActivity.stringToBool(sensor.getJSONArray(0).getString(3)) ){
+                    String dateString = "";
+                    Calendar calen_cel = Calendar.getInstance();
+                    Calendar calen_server = FormataData.formatToCalendar(sensor.getJSONArray(0).getString(3));
+                    if(calen_cel.get(Calendar.MONTH) != calen_server.get(Calendar.MONTH)||
+                            calen_cel.get(Calendar.DAY_OF_MONTH) != calen_server.get(Calendar.DAY_OF_MONTH)){
+                        int d1 = calen_server.get(Calendar.DAY_OF_MONTH);
+                        int d2 = calen_cel.get(Calendar.DAY_OF_MONTH);
+                        if(d1 + 1 == d2){
+                            dateString += "Ontem às ";
+                        }else{
+                            dateString += FormataData.formatToString(sensor.getJSONArray(0).getString(3), "dd/MM/yyyy") + " às ";
+                        }
+                    }
+                    dateString += FormataData.formatToString(sensor.getJSONArray(0).getString(3), "HH:mm:ss");
+                    text_date_att.setText(dateString);
+
+                    calen_server.add(Calendar.MINUTE,5);
+                    if(calen_cel.after(calen_server) ){
                         if(alert1 == null || !alert1.isShowing()) {
                             alert1 = new DialogError(atividade, "Atenção",
                                     "Faz mais de 5 minutos que o monitor não é atualizado pelo arduino.\n" +
@@ -152,9 +175,6 @@ public class Screen_Monitor extends AppCompatActivity {
                             alert1.show();
                         }
                     }
-                    Date currentTime = Calendar.getInstance().getTime();
-                    String date_att = FormataData.formatToString(sensor.getJSONArray(0).getString(4),"");
-
 
                     text_temp.setText(sensor.getJSONArray(0).getString(0).substring(0,sensor.getJSONArray(0).getString(0).length()-3) + "°C");
                     text_tempMin.setText(sensor.getJSONArray(0).getString(1).substring(0,sensor.getJSONArray(0).getString(1).length()-3) + "°");
@@ -236,8 +256,8 @@ public class Screen_Monitor extends AppCompatActivity {
             }else{
                 if(alert1 == null || !alert1.isShowing()) {
                     alert1 = new DialogError(atividade, "Erro", erro);
-                    if (timer != null)
-                        timer.cancel();
+                   /* if (timer != null)
+                        timer.cancel();*/
                     alert1.show();
                 }
             }
@@ -296,7 +316,7 @@ public class Screen_Monitor extends AppCompatActivity {
                         break;
                 }
                 alert1 = new DialogError(atividade, "Erro",erro);
-                timer.cancel();
+               // timer.cancel();
                 alert1.show();
             }
         }
