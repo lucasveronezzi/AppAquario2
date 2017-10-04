@@ -20,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Screen_Monitor extends AppCompatActivity {
 
@@ -38,9 +39,11 @@ public class Screen_Monitor extends AppCompatActivity {
     private TextView text_date_motor;
     private ImageView img_temp;
     private ImageView img_ph;
-    //private Timer timer;
 
+    private TaskMonitor task_monitor;
     private DialogError alert1;
+    private Runnable runLoop;
+    private final Handler handlerLoop = new Handler();
     private static final int ACTION_BOMBA = 1;
     private static final int ACTION_ALIMENTAR = 2;
 
@@ -67,19 +70,9 @@ public class Screen_Monitor extends AppCompatActivity {
         img_ph = (ImageView) findViewById(R.id.imgPH);
         img_temp = (ImageView) findViewById(R.id.imgTemp);
 
-        TaskMonitor task = new TaskMonitor(true);
-        task.execute();
-        task.
+        task_monitor= new TaskMonitor(true);
+        task_monitor.execute();
 
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                TaskMonitor task = new TaskMonitor(false);
-                task.execute();
-                handler.postDelayed(this,10000);
-            }
-        }, 10000);
         /*timer = new Timer();
         TimerTask timerTask = new TimerTask() {
             @Override
@@ -98,19 +91,29 @@ public class Screen_Monitor extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
-        //timer.cancel();
+        if(runLoop !=null) handlerLoop.removeCallbacks(runLoop);
+        task_monitor.cancel(true);
+    }
+
+    public void loopTaskMonitor(){
+        runLoop = new Runnable() {
+            @Override
+            public void run() {
+                TaskMonitor task = new TaskMonitor(false);
+                task.execute();
+            }
+        };
+        handlerLoop.postDelayed(runLoop, 10000);
     }
 
     public void actionBomba(View v){
-        switch_bomba.setEnabled(false);
         TaskAction task = new TaskAction(ACTION_BOMBA);
-        task.execute();
+        task.execute("id=2&action=1");
     }
 
     public void actionAlimentar(View v){
-        toggle_alimentar.setEnabled(false);
         TaskAction task = new TaskAction(ACTION_ALIMENTAR);
-        task.execute();
+        task.execute("id=1&action=1");
     }
 
     private class TaskMonitor extends AsyncTask<String, Void, JSONArray> {
@@ -129,7 +132,7 @@ public class Screen_Monitor extends AppCompatActivity {
                 pDialog.setCancelable(false);
                 pDialog.show();
             }else{
-                Toast.makeText(atividade, "Atualizando informações...",Toast.LENGTH_SHORT).show();
+                //Toast.makeText(atividade, "Atualizando informações...",Toast.LENGTH_SHORT).show();
             }
         }
         @Override
@@ -137,6 +140,14 @@ public class Screen_Monitor extends AppCompatActivity {
             JSONArray dados = null;
             try {
                 dados = APIHTTP.getArray("monitor","GET","");
+                int x = 0;
+                while (x<1000) {
+                    x++;
+                    if(x/200 ==0){
+                        Log.i("Loop","teste : "+x);
+                    }
+                }
+
             } catch (Exception e) {
                 Log.i("API", e.getMessage());
                 erro = e.getMessage();
@@ -193,16 +204,22 @@ public class Screen_Monitor extends AppCompatActivity {
                     }
 
                     if(!firstTask){
-                        if(switch_bomba.isChecked() && !MainActivity.stringToBool(rele.getJSONArray(1).getString(0)) )
-                            Toast.makeText(atividade, "Bomba de Água Desligada!",Toast.LENGTH_LONG);
-                        if(!switch_bomba.isChecked() && MainActivity.stringToBool(rele.getJSONArray(1).getString(0)) )
-                            Toast.makeText(atividade, "Bomba de Água Ligada!",Toast.LENGTH_LONG);
-
+                        if(!switch_bomba.isEnabled() && !MainActivity.stringToBool(rele.getJSONArray(1).getString(0)) && !MainActivity.stringToBool(rele.getJSONArray(1).getString(1)) ){
+                            Toast.makeText(atividade, "Bomba de Água Desligada!",Toast.LENGTH_LONG).show();
+                        }
+                        if(!switch_bomba.isEnabled() && MainActivity.stringToBool(rele.getJSONArray(1).getString(0)) && !MainActivity.stringToBool(rele.getJSONArray(1).getString(1)) ){
+                            Toast.makeText(atividade, "Bomba de Água Ligada!",Toast.LENGTH_LONG).show();
+                        }
                         if(!toggle_alimentar.isChecked() && !MainActivity.stringToBool(rele.getJSONArray(0).getString(1)) )
-                            Toast.makeText(atividade, "Os peixes foram alimentados!",Toast.LENGTH_LONG);
+                            Toast.makeText(atividade, "Os peixes foram alimentados!",Toast.LENGTH_LONG).show();
                     }
 
-                    switch_bomba.setChecked(MainActivity.stringToBool(rele.getJSONArray(1).getString(0)));
+                    if(MainActivity.stringToBool(rele.getJSONArray(1).getString(1))){
+                        switch_bomba.setChecked(!MainActivity.stringToBool(rele.getJSONArray(1).getString(0)));
+                    }else{
+                        switch_bomba.setChecked(MainActivity.stringToBool(rele.getJSONArray(1).getString(0)));
+                    }
+
                     switch_bomba.setEnabled(!MainActivity.stringToBool(rele.getJSONArray(1).getString(1)));
 
                     toggle_alimentar.setChecked(!MainActivity.stringToBool(rele.getJSONArray(0).getString(1)));
@@ -256,17 +273,17 @@ public class Screen_Monitor extends AppCompatActivity {
             }else{
                 if(alert1 == null || !alert1.isShowing()) {
                     alert1 = new DialogError(atividade, "Erro", erro);
-                   /* if (timer != null)
-                        timer.cancel();*/
                     alert1.show();
                 }
             }
             if(firstTask) pDialog.dismiss();
+            if(array != null ) {
+                loopTaskMonitor();
+            }
         }
     }
 
     private class TaskAction extends AsyncTask<String, Void, JSONObject> {
-        private String param = "";
         private String erro;
         private int action;
         private TaskAction(int action){
@@ -277,24 +294,31 @@ public class Screen_Monitor extends AppCompatActivity {
             String textShow = "";
             switch (action){
                 case ACTION_BOMBA:
-                    if(switch_bomba.isChecked())
-                        textShow = "Ligando Bomba de Água...";
-                    else
-                        textShow = "Desligando Bomba de Água...";
-                    param = "id=2&action=1";
+                        switch_bomba.setEnabled(false);
+                        if(switch_bomba.isChecked())
+                            textShow = "Ligando Bomba de Água...";
+                        else
+                            textShow = "Desligando Bomba de Água...";
                     break;
                 case ACTION_ALIMENTAR:
+                        toggle_alimentar.setEnabled(false);
                         textShow = "Alimentando os peixes. Aguarde;";
-                    param = "id=1&action=1";
                     break;
             }
-            Toast.makeText(atividade, textShow ,Toast.LENGTH_LONG).show();
+            Toast.makeText(atividade, textShow ,Toast.LENGTH_SHORT).show();
         }
         @Override
         protected JSONObject doInBackground(String... params) {
             JSONObject dados = null;
             try {
-                dados = APIHTTP.getObject("action","PUT",this.param);
+                dados = APIHTTP.getObject("action","PUT",params[0]);
+                int x = 0;
+                while (x<1000) {
+                    x++;
+                    if(x/200 ==0){
+                        Log.i("Loop","teste2 : "+x);
+                    }
+                }
             } catch (Exception e) {
                 Log.i("API", e.getMessage());
                 this.erro = e.getMessage();
@@ -316,7 +340,6 @@ public class Screen_Monitor extends AppCompatActivity {
                         break;
                 }
                 alert1 = new DialogError(atividade, "Erro",erro);
-               // timer.cancel();
                 alert1.show();
             }
         }
