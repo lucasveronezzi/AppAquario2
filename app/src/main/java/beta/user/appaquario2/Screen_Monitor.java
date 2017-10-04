@@ -20,7 +20,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class Screen_Monitor extends AppCompatActivity {
 
@@ -140,14 +139,6 @@ public class Screen_Monitor extends AppCompatActivity {
             JSONArray dados = null;
             try {
                 dados = APIHTTP.getArray("monitor","GET","");
-                int x = 0;
-                while (x<1000) {
-                    x++;
-                    if(x/200 ==0){
-                        Log.i("Loop","teste : "+x);
-                    }
-                }
-
             } catch (Exception e) {
                 Log.i("API", e.getMessage());
                 erro = e.getMessage();
@@ -312,13 +303,6 @@ public class Screen_Monitor extends AppCompatActivity {
             JSONObject dados = null;
             try {
                 dados = APIHTTP.getObject("action","PUT",params[0]);
-                int x = 0;
-                while (x<1000) {
-                    x++;
-                    if(x/200 ==0){
-                        Log.i("Loop","teste2 : "+x);
-                    }
-                }
             } catch (Exception e) {
                 Log.i("API", e.getMessage());
                 this.erro = e.getMessage();

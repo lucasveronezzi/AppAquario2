@@ -10,11 +10,22 @@ import java.util.Calendar;
 
 public class FormataData {
     private static SimpleDateFormat formatoMYSQL = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static SimpleDateFormat formatoDate = new SimpleDateFormat("dd/MM/yyyy");
     private static Calendar c = Calendar.getInstance();
     public static String formatToString(String dateMysql, String formato){
         SimpleDateFormat formatDate = new SimpleDateFormat(formato);
         try {
             return formatDate.format(formatoMYSQL.parse(dateMysql));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String formatToMysql(String date, String formato){
+        SimpleDateFormat formatDate = new SimpleDateFormat(formato);
+        try {
+            return formatDate.format(formatoDate.parse(date));
         } catch (ParseException e) {
             e.printStackTrace();
         }
