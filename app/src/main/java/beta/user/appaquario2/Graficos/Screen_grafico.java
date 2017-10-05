@@ -46,6 +46,9 @@ public class Screen_grafico extends AppCompatActivity implements DatePickerDialo
     private CheckBox check_temp;
     private CheckBox check_ph;
     private CheckBox check_vazao;
+    private LineDataSet setTemp;
+    private LineDataSet setPH;
+    private LineDataSet setVazao;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,13 +116,32 @@ public class Screen_grafico extends AppCompatActivity implements DatePickerDialo
     }
 
     public void onCheckTemp(View v){
-        if(chart.getda)
+        func_dataset_check(setTemp, v);
     }
     public void onCheckPH(View v){
-
+        func_dataset_check(setPH, v);
     }
     public void onCheckVazao(View v){
-
+        func_dataset_check(setVazao, v);
+    }
+    private void func_dataset_check(LineDataSet lined, View v){
+        LineData ld;
+        if(!check_temp.isChecked() && !check_ph.isChecked() && !check_vazao.isChecked()){
+            ((CheckBox) v).setChecked(true);
+        }else {
+            if ((ld = chart.getLineData()) != null) {
+                if (ld.getDataSets().size() > 0) {
+                    if (((CheckBox) v).isChecked()) {
+                        dataSets.add(lined);
+                    } else {
+                        dataSets.remove(lined);
+                    }
+                    LineData lineData = new LineData(dataSets);
+                    chart.setData(lineData);
+                    chart.invalidate();
+                }
+            }
+        }
     }
 
     @Override
@@ -183,11 +205,11 @@ public class Screen_grafico extends AppCompatActivity implements DatePickerDialo
                             entries_vazao.add(new Entry(x, y));
                         }
 
-                        LineDataSet setTemp = new LineDataSet(entries_temp, "Temperatura em C°");
+                        setTemp = new LineDataSet(entries_temp, "Temperatura em C°");
                         setTemp.setColor(Color.RED);
-                        LineDataSet setPH = new LineDataSet(entries_ph, "Nível do PH");
-                        setTemp.setColor(Color.GREEN);
-                        LineDataSet setVazao = new LineDataSet(entries_vazao, "Vazão da Água (L/m)");
+                        setPH = new LineDataSet(entries_ph, "Nível do PH");
+                        setPH.setColor(Color.GREEN);
+                        setVazao = new LineDataSet(entries_vazao, "Vazão da Água (L/m)");
 
                         dataSets = new ArrayList<ILineDataSet>();
                         if(check_temp.isChecked())
