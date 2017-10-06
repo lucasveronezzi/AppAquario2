@@ -81,7 +81,17 @@ public class Screen_grafico extends AppCompatActivity implements DatePickerDialo
         date1.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        Calendar calendar = Calendar.getInstance();
                         bool_date = true;
+                        if(date1.getText() != "")
+                            datePickerDialog.
+                                    updateDate(Integer.parseInt(date1.getText().toString().substring(6,10)),
+                                            Integer.parseInt(date1.getText().toString().substring(3,5)),
+                                            Integer.parseInt(date1.getText().toString().substring(0,2)));
+                        else
+                            datePickerDialog.updateDate(calendar.get(Calendar.YEAR),
+                                    calendar.get(Calendar.MONTH),
+                                    calendar.get(Calendar.DAY_OF_MONTH));
                         datePickerDialog.show();
                     }
                 });
@@ -90,7 +100,17 @@ public class Screen_grafico extends AppCompatActivity implements DatePickerDialo
         date2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Calendar calendar = Calendar.getInstance();
                 bool_date = false;
+                if(date2.getText() != "")
+                    datePickerDialog.
+                            updateDate(Integer.parseInt(date2.getText().toString().substring(6,10)),
+                                    Integer.parseInt(date2.getText().toString().substring(3,5)),
+                                    Integer.parseInt(date2.getText().toString().substring(0,2)));
+                else
+                    datePickerDialog.updateDate(calendar.get(Calendar.YEAR),
+                            calendar.get(Calendar.MONTH),
+                            calendar.get(Calendar.DAY_OF_MONTH));
                 datePickerDialog.show();
             }
         });
@@ -146,6 +166,7 @@ public class Screen_grafico extends AppCompatActivity implements DatePickerDialo
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        month++;
         String sDayofMonth = ""+dayOfMonth;
         String sMonth = ""+month;
         if(dayOfMonth < 10)

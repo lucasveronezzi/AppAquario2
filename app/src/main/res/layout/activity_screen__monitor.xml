@@ -276,6 +276,7 @@
                 android:onClick="actionBomba"
                 android:textOff="OFF"
                 android:textOn="ON" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -303,6 +304,7 @@
                 android:onClick="actionAlimentar"
                 android:textOff="Aguarde"
                 android:textOn="Alimentar" />
+
         </LinearLayout>
 
         <LinearLayout

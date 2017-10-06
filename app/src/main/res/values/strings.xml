@@ -4,4 +4,5 @@
     <string name="config_name">Configuração</string>
     <string name="grafico_name">Estatísticas e Gráficos</string>
     <string name="monitor_name">Monitor</string>
+    <string name="title_alimentar">Alimentar</string>
 </resources>

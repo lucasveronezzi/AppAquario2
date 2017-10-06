@@ -1,15 +1,22 @@
 package beta.user.appaquario2;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.NumberPicker;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,20 +78,6 @@ public class Screen_Monitor extends AppCompatActivity {
 
         task_monitor= new TaskMonitor(true);
         task_monitor.execute();
-
-        /*timer = new Timer();
-        TimerTask timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(new Runnable() {
-                    public void run() {
-                        TaskMonitor task = new TaskMonitor(false);
-                        task.execute();
-                    }
-                });
-            }
-        };
-        timer.schedule(timerTask, 15000, 15000);;*/
     }
 
     @Override
@@ -111,8 +104,30 @@ public class Screen_Monitor extends AppCompatActivity {
     }
 
     public void actionAlimentar(View v){
-        TaskAction task = new TaskAction(ACTION_ALIMENTAR);
-        task.execute("id=1&action=1");
+        toggle_alimentar.setChecked(!toggle_alimentar.isChecked());
+        final NumberPicker picker = new NumberPicker(this);
+        picker.setMinValue(1);
+        picker.setMaxValue(20);
+
+        final FrameLayout layout = new FrameLayout(this);
+        layout.addView(picker, new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                Gravity.CENTER));
+
+        final AlertDialog diag = new AlertDialog.Builder(this)
+                .setTitle("Quantidade")
+                .setView(layout)
+                .setPositiveButton(R.string.title_alimentar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        toggle_alimentar.setChecked(!toggle_alimentar.isChecked());
+                        TaskAction task = new TaskAction(ACTION_ALIMENTAR);
+                        task.execute("id=1&action=1&repetir="+picker.getValue());
+                    }
+                }).setNegativeButton("Fechar",null)
+                .create();
+        diag.show();
     }
 
     private class TaskMonitor extends AsyncTask<String, Void, JSONArray> {
