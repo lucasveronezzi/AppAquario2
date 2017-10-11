@@ -39,7 +39,7 @@ public class Screen_grafico extends AppCompatActivity implements DatePickerDialo
     private AppCompatActivity atividade;
     private LineChart chart;
     private IAxisValueFormatter formartDayAxis;
-    private List<ILineDataSet> dataSets;
+    private IAxisValueFormatter formartHourAxis;
     private TextView date1;
     private TextView date2;
     private boolean bool_date;
@@ -63,18 +63,14 @@ public class Screen_grafico extends AppCompatActivity implements DatePickerDialo
 
         chart = (LineChart) findViewById(R.id.chart);
         chart.setDrawBorders(true);
+        chart.setAutoScaleMinMaxEnabled(true);
         chart.getDescription().setEnabled(false);
+        chart.setDragEnabled(true);
         Legend l = chart.getLegend();
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
         l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
         formartDayAxis = new DayAxisFormart(chart);
-
-        XAxis xAxis = chart.getXAxis();
-        chart.getAxisRight().setEnabled(false);
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setGranularity(1); // minimum axis-step (interval) is 1
-        xAxis.setValueFormatter(formartDayAxis);
 
         final DatePickerDialog datePickerDialog = new DatePickerDialog(this, this, 2017, 10, 04);
         date1 = (TextView) findViewById(R.id.date1);
@@ -86,7 +82,7 @@ public class Screen_grafico extends AppCompatActivity implements DatePickerDialo
                         if(date1.getText() != "")
                             datePickerDialog.
                                     updateDate(Integer.parseInt(date1.getText().toString().substring(6,10)),
-                                            Integer.parseInt(date1.getText().toString().substring(3,5)),
+                                            Integer.parseInt(date1.getText().toString().substring(3,5))-1,
                                             Integer.parseInt(date1.getText().toString().substring(0,2)));
                         else
                             datePickerDialog.updateDate(calendar.get(Calendar.YEAR),
@@ -122,8 +118,16 @@ public class Screen_grafico extends AppCompatActivity implements DatePickerDialo
         if(data1 != ""){
             TaskGraficos task = new TaskGraficos();
             data1 = FormataData.formatToMysql(data1,"yyyy-MM-dd");
-            if(data2 == "") data2 = "9999-99-99" ;
-            else data2 = FormataData.formatToMysql(data2,"yyyy-MM-dd");
+            XAxis xAxis = chart.getXAxis();
+            if(data2 == "") {
+                xAxis.setValueFormatter(formartHourAxis);
+            }else{
+                xAxis.setValueFormatter(formartDayAxis);
+                data2 = FormataData.formatToMysql(data2,"yyyy-MM-dd");
+            }
+            chart.getAxisRight().setEnabled(false);
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setGranularity(1); // minimum axis-step (interval) is 1
 
             if(check_ph.isChecked() || check_temp.isChecked() || check_vazao.isChecked())
                 task.execute("data1="+data1+"&data2="+data2+"");
@@ -146,18 +150,18 @@ public class Screen_grafico extends AppCompatActivity implements DatePickerDialo
     }
     private void func_dataset_check(LineDataSet lined, View v){
         LineData ld;
+        List<ILineDataSet> lds;
         if(!check_temp.isChecked() && !check_ph.isChecked() && !check_vazao.isChecked()){
             ((CheckBox) v).setChecked(true);
         }else {
             if ((ld = chart.getLineData()) != null) {
-                if (ld.getDataSets().size() > 0) {
+                if ((lds = ld.getDataSets()).size() > 0) {
                     if (((CheckBox) v).isChecked()) {
-                        dataSets.add(lined);
+                        lds.add(lined);
                     } else {
-                        dataSets.remove(lined);
+                        lds.remove(lined);
                     }
-                    LineData lineData = new LineData(dataSets);
-                    chart.setData(lineData);
+                    ld.notifyDataChanged();
                     chart.invalidate();
                 }
             }
@@ -213,8 +217,13 @@ public class Screen_grafico extends AppCompatActivity implements DatePickerDialo
                     float y;
                     if(array.length() != 0) {
                         for (int i = 0; i < array.length(); i++) {
-                            Calendar calen = FormataData.formatToCalendar(array.getJSONArray(i).getString(1));
-                            x = calen.get(Calendar.DAY_OF_YEAR) + 366;
+                            if(date2.getText() == ""){
+                                x = Float.parseFloat(array.getJSONArray(i).getString(1));
+                            }else{
+                                Calendar calen = FormataData.formatToCalendar(array.getJSONArray(i).getString(1));
+                                x = calen.get(Calendar.DAY_OF_YEAR) + 366;
+                            }
+
 
                             y = Float.parseFloat(array.getJSONArray(i).getString(2));
                             entries_temp.add(new Entry(x, y));
@@ -232,7 +241,7 @@ public class Screen_grafico extends AppCompatActivity implements DatePickerDialo
                         setPH.setColor(Color.GREEN);
                         setVazao = new LineDataSet(entries_vazao, "Vazão da Água (L/m)");
 
-                        dataSets = new ArrayList<ILineDataSet>();
+                        List<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
                         if(check_temp.isChecked())
                             dataSets.add(setTemp);
                         if(check_ph.isChecked())
