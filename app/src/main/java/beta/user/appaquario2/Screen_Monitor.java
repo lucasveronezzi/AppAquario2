@@ -153,7 +153,7 @@ public class Screen_Monitor extends AppCompatActivity {
         protected JSONArray doInBackground(String... params) {
             JSONArray dados = null;
             try {
-                dados = APIHTTP.getArray("monitor","GET","");
+                dados = APIHTTP.getArray("monitor/action/","GET","");
             } catch (Exception e) {
                 Log.i("API", e.getMessage());
                 erro = e.getMessage();
