@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.CheckBox;
@@ -71,6 +70,7 @@ public class Screen_grafico extends AppCompatActivity implements DatePickerDialo
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
         l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
         formartDayAxis = new DayAxisFormart(chart);
+        formartHourAxis = new HourAxisFormart();
 
         final DatePickerDialog datePickerDialog = new DatePickerDialog(this, this, 2017, 10, 04);
         date1 = (TextView) findViewById(R.id.date1);
@@ -201,8 +201,10 @@ public class Screen_grafico extends AppCompatActivity implements DatePickerDialo
             try {
                 dados = APIHTTP.getArray("registro/?"+params[0],"GET","");
             } catch (Exception e) {
-                Log.i("API", e.getMessage());
-                this.erro = e.getMessage();
+                if(e.getMessage().startsWith("Unable to resolve host"))
+                    erro = "Falha ao tentar se conectar com o servidor web.\nVerifique se seu celular possui sinal com a internet.";
+                else
+                    erro = e.getMessage();
             }
             return dados;
         }

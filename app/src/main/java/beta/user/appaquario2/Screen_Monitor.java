@@ -2,7 +2,6 @@ package beta.user.appaquario2;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,7 +9,6 @@ import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -156,7 +154,10 @@ public class Screen_Monitor extends AppCompatActivity {
                 dados = APIHTTP.getArray("monitor/action/","GET","");
             } catch (Exception e) {
                 Log.i("API", e.getMessage());
-                erro = e.getMessage();
+                if(e.getMessage().startsWith("Unable to resolve host"))
+                    erro = "Falha ao tentar se conectar com o servidor web.\nVerifique se seu celular possui sinal com a internet.";
+                else
+                    erro = e.getMessage();
             }
             return dados;
         }
@@ -319,8 +320,10 @@ public class Screen_Monitor extends AppCompatActivity {
             try {
                 dados = APIHTTP.getObject("action","PUT",params[0]);
             } catch (Exception e) {
-                Log.i("API", e.getMessage());
-                this.erro = e.getMessage();
+                if(e.getMessage().startsWith("Unable to resolve host"))
+                    erro = "Falha ao tentar se conectar com o servidor web.\nVerifique se seu celular possui sinal com a internet.";
+                else
+                    erro = e.getMessage();
             }
             return dados;
         }

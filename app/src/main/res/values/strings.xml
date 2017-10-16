@@ -2,7 +2,7 @@
     <string name="app_name">Aquário Monitor</string>
     <string name="cmd_name">Comandos para o Áquario</string>
     <string name="config_name">Configuração</string>
-    <string name="grafico_name">Estatísticas e Gráficos</string>
+    <string name="grafico_name">Gráficos</string>
     <string name="monitor_name">Monitor</string>
     <string name="title_alimentar">Alimentar</string>
 </resources>

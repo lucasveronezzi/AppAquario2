@@ -6,11 +6,9 @@ import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -310,9 +308,10 @@ public class Screen_Config extends AppCompatActivity {
                 }
                 list_del_agenda = new ArrayList<Integer>();
             } catch (Exception e) {
-                e.printStackTrace();
-                Log.i("API", e.getMessage());
-                this.erro = e.getMessage();
+                if(e.getMessage().startsWith("Unable to resolve host"))
+                    erro = "Falha ao tentar se conectar com o servidor web.\nVerifique se seu celular possui sinal com a internet.";
+                else
+                    erro = e.getMessage();
             }
             return dados;
         }
