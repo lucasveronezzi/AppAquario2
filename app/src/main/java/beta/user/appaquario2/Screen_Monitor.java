@@ -193,10 +193,12 @@ public class Screen_Monitor extends AppCompatActivity {
                             alert1.show();
                         }
                     }
-
-                    text_temp.setText(sensor.getJSONArray(0).getString(0).substring(0,sensor.getJSONArray(0).getString(0).length()-3) + "°C");
-                    text_tempMin.setText(sensor.getJSONArray(0).getString(1).substring(0,sensor.getJSONArray(0).getString(1).length()-3) + "°");
-                    text_tempMax.setText(sensor.getJSONArray(0).getString(2).substring(0,sensor.getJSONArray(0).getString(2).length()-3) + "°");
+                    if(sensor.getJSONArray(0).getString(0).length() > 2)
+                        text_temp.setText(sensor.getJSONArray(0).getString(0).substring(0,sensor.getJSONArray(0).getString(0).length()-3) + "°C");
+                    if(sensor.getJSONArray(0).getString(1).length() > 2)
+                        text_tempMin.setText(sensor.getJSONArray(0).getString(1).substring(0,sensor.getJSONArray(0).getString(1).length()-3) + "°");
+                    if(sensor.getJSONArray(0).getString(2).length() > 2)
+                        text_tempMax.setText(sensor.getJSONArray(0).getString(2).substring(0,sensor.getJSONArray(0).getString(2).length()-3) + "°");
                     text_PH.setText(sensor.getJSONArray(2).getString(0));
                     text_vazao.setText(sensor.getJSONArray(1).getString(0) + " (L/m)");
 
