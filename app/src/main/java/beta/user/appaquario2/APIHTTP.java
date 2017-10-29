@@ -50,7 +50,7 @@ public class APIHTTP {
     private static StringBuilder Connect(String request, String metodo, String param) throws IOException {
         HttpURLConnection connection;
         StringBuilder sb = new StringBuilder();
-            URL url = new URL("http://www.vssistemas.com.br/aquario_monitor/"+request);
+            URL url = new URL("http://192.168.1.34/aquario_monitor/"+request);
 
             connection = (HttpURLConnection) url.openConnection();
             connection.setDoInput(true);
